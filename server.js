@@ -1,6 +1,3 @@
-
-const weapons = require("./armes.json");
-
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -163,6 +160,30 @@ const WeaponSchema = new Schema({
 
 module.exports = Weapon = mongoose.model("Weapon", WeaponSchema);
 
-app.listen(port, () => {
-  
+app.get("/api/weapons", async (req, res) => {
+  try {
+    const aWeapons = await Weapon.find({}).limit(100);
+    if (aWeapons) {
+      return res.status(200).json(aWeapons);
+    } else {
+      return res.status(404).json({ error: "Not found" });
+    }
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
+app.get("/api/weapons/:id", async (req, res) => {
+  try {
+    const aWeapon = await Weapon.findById(req.params.id);
+    if (aWeapon) {
+      return res.status(200).json(aWeapon);
+    } else {
+      return res.status(404).json({ error: "Not Found" });
+    }
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.listen(port, () => {});
